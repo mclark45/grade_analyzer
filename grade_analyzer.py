@@ -98,7 +98,7 @@ while True:
             d.append(num)
             passing += 1
         else:
-            f.add(num)
+            f.append(num)
             failing += 1
 
         # calculate new average and print it out
