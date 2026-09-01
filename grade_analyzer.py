@@ -1,45 +1,38 @@
 scores = [88, 45, 92, 67, 73, 95, 81, 56, 78, 100, 62, 85, 90, 38, 71]
 
-# create list for each grade
-a = list()
-b = list()
-c = list()
-d = list()
-f = list()
+# create dictionary for the grades
+grade_buckets = {
+    "A": [],
+    "B": [],
+    "C": [],
+    "D": [],
+    "F": []
+}
+
+# takes a score and gets its letter grade value
+def get_bucket(score):
+    if 90 <= score <= 100: return "A"
+    if 80 <= score <= 89: return "B"
+    if 70 <= score <= 79: return "C"
+    if 60 <= score <= 69: return "D"
+    return "F"
 
 #get total number of scores and initialize other variables
 total_scores = len(scores)
-total_unaveraged_score = 0
-highest = 0
-lowest = 100
+total_unaveraged_score = sum(scores)
+highest = max(scores)
+lowest = min(scores)
 passing = 0
 failing = 0
 
 # loop through scores
 for score in scores:
-    # add score to total
-    total_unaveraged_score += score
-    # compare score to highest and adjust if needed
-    highest = max(highest, score)
-    # compare score to lowest and adjust if needed
-    lowest = min(lowest, score)
-
-    # place score in correct grade bracket
-    if score >= 90 and score <= 100:
-        a.append(score)
-        passing += 1
-    elif score >= 80 and score <= 89:
-        b.append(score)
-        passing += 1
-    elif score >= 70 and score <= 79:
-        c.append(score)
-        passing += 1
-    elif score >= 60 and score <= 69:
-        d.append(score)
-        passing += 1
-    else:
-        f.append(score)
+    bucket = get_bucket(score)
+    grade_buckets[bucket].append(score)
+    if bucket == "F":
         failing += 1
+    else:
+        passing += 1
 
 # calculate average and pass/fail rate
 average_score = total_unaveraged_score / total_scores
@@ -51,59 +44,54 @@ print("=== Grade Analyzer ===")
 print(f"Total scores: {total_scores}")
 print(f"Average: {average_score:.1f}")
 print(f"Highest: {highest}")
-print(f"Loweset: {lowest}")
-print(f"Passing: {passing} ({pass_rate}%)")
-print(f"Failing: {failing} ({fail_rate}%)\n")
+print(f"Lowest: {lowest}")
+print(f"Passing: {passing} ({pass_rate:.1f}%)")
+print(f"Failing: {failing} ({fail_rate:.1f}%)\n")
+
 print("Grade Distribution:")
-print(f"A: {len(a)} students")
-print(f"B: {len(b)} students")
-print(f"C: {len(c)} students")
-print(f"D: {len(d)} students")
-print(f"F: {len(f)} students\n")
-print(f"--- Add More Scores ---")
+for grade, bucket in grade_buckets.items():
+    print(f"{grade}: {len(bucket)} students")
+
+print("\n--- Add More Scores ---")
 
 # loop while user wants to add scores
 while True:
     # ask what user wants to do
-    choice = input("Enter a score (or 'done' to finish): ")
+    choice = input("Enter a score (or 'done' to finish): ").strip()
 
     # end if user is done
-    if choice == "done":
+    if choice.lower() == "done":
         break
 
     try:
         # convert string to int
         num = int(choice)
-        # append to scores list
+
+        if not 0 <= num <= 100:
+            print("Score must be between 0 and 100.")
+            continue
+
+        # update main list
         scores.append(num)
-        # add num to unaveraged score
         total_unaveraged_score += num
-        # increase total score count
         total_scores += 1
-        # update highest and lowest score
+
+        # update highest and lowest
         highest = max(highest, num)
         lowest = min(lowest, num)
 
         # update grade distribution
-        if 90 <= num <= 100:
-            a.append(num)
-            passing += 1
-        elif 80 <= num <= 89:
-            b.append(num)
-            passing += 1
-        elif 70 <= num <= 79:
-            c.append(num)
-            passing += 1
-        elif 60 <= num <= 69:
-            d.append(num)
-            passing += 1
-        else:
-            f.append(num)
+        bucket = get_bucket(num)
+        grade_buckets[bucket].append(num)
+
+        if bucket == "F":
             failing += 1
+        else:
+            passing += 1
 
         # calculate new average and print it out
         average_score = total_unaveraged_score / total_scores
-        print(f"Update average: {average_score:.1f}")
+        print(f"Updated average: {average_score:.1f}")
     except ValueError:
         # tell user there input was wrong
         print("Invalid input. Enter an integer or 'done'.")
